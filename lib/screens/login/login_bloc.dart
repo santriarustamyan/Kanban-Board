@@ -25,10 +25,10 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     String? loginname = event?.nameforlogin;
     String? password = event?.password;
 
-    if (loginname == null || loginname.length < 1) {
-      yield InvalidPassword();
-    } else if (password == null || password.length < 8) {
+    if (loginname == null || loginname.length < 4) {
       yield InvalidLoginName();
+    } else if (password == null || password.length < 8) {
+      yield InvalidPassword();
     } else {
       yield LoginPasswordValidated(loginname, password);
     }
@@ -37,11 +37,16 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   Stream<LoginState> mapEventIdentificationToState(
       UserLoginEvent event) async* {
     try {
-      await userRepository.login(event.identificator, event.password);
-
-      yield UserSuccessState();
+      var result =
+          await userRepository.login(event.identificator, event.password);
+      if (result!.statusCode == 200)
+        yield UserSuccessState();
+      else if (result.statusCode == 400)
+        yield UserFalseState(errorMessage: "UnAuthorized");
+      else
+        yield UserFalseState(errorMessage: "Something went wrong");
     } catch (e) {
-      yield UserFalseState(errorMessage: e.toString());
+      yield UserFalseState(errorMessage: "Something went Wrong");
     }
 
     yield LoginInitial();

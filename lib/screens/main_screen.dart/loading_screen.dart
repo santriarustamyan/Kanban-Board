@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:kanban_boards/screens/cards_board/cards_board_creen.dart';
+import 'package:kanban_boards/wdgets/cards_board_widget.dart';
 import 'package:kanban_boards/screens/login/login_screen.dart';
 import 'package:kanban_boards/screens/main_screen.dart/loading_event.dart';
 import 'loading_bloc.dart';

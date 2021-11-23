@@ -32,6 +32,8 @@ class TxtFieldForScreen extends StatelessWidget {
       ),
       child: TextFormField(
         autofocus: true,
+        textAlign: TextAlign.center,
+        style: TextStyle(color: Colors.white),
         keyboardType: txtType,
         obscureText: obscure!,
         validator: validator,
@@ -41,6 +43,7 @@ class TxtFieldForScreen extends StatelessWidget {
         decoration: InputDecoration(
             prefix: preffix,
             labelText: label,
+            labelStyle: TextStyle(color: Colors.white),
             suffixIcon: suffixIcon,
             prefixIcon: preffixIcon,
             focusedBorder: UnderlineInputBorder(

@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:kanban_boards/screens/cards_board/cards_board_creen.dart';
+import 'package:kanban_boards/wdgets/cards_board_widget.dart';
 import 'package:kanban_boards/screens/login/login_event.dart';
-import 'package:kanban_boards/wdgets/continue_button.dart';
-import 'package:kanban_boards/wdgets/headline_Widget.dart';
-import 'package:kanban_boards/wdgets/richText_Widget.dart';
+import 'package:kanban_boards/wdgets/login_button.dart';
 import 'package:kanban_boards/wdgets/showAlert.dart';
 import 'package:kanban_boards/wdgets/txt_field.dart';
 import 'login_bloc.dart';
@@ -21,6 +19,7 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _isObscure = true;
   String _loginError = "";
   late LoginBloc _loginBloc;
+  double get _deviceSizeWidth => MediaQuery.of(context).size.width;
 
   @override
   void initState() {
@@ -52,15 +51,18 @@ class _LoginScreenState extends State<LoginScreen> {
           onWillPop: () async => false,
           child: SafeArea(
               child: Scaffold(
+                  backgroundColor: Colors.black,
+                  appBar: AppBar(
+                    automaticallyImplyLeading: false,
+                    backgroundColor: Colors.grey,
+                    title: const Text('Kanban'),
+                  ),
                   body: Stack(children: [
-            SingleChildScrollView(
-              child: _renderMainOnScreen(state),
-            ),
-            HeadlineWidget(
-              text: "Log_In",
-            ),
-            _renderButtonLogin(state),
-          ]))));
+                    SingleChildScrollView(
+                      child: _renderMainOnScreen(state),
+                    ),
+                    _renderButtonLogin(state),
+                  ]))));
     });
   }
 
@@ -74,23 +76,29 @@ class _LoginScreenState extends State<LoginScreen> {
         children: [
           _renderTxtFieldForScreenEmail(state),
           _renderTxtFieldForScreenPass(state),
-          _renderTextForgotPass(),
         ],
       ),
     );
   }
 
   Widget _renderTxtFieldForScreenEmail(LoginState state) {
-    return Padding(
+    return Container(
+        margin: EdgeInsets.only(left: _deviceSizeWidth / 10, bottom: 10),
+        width: _deviceSizeWidth * 4 / 5,
+        decoration: BoxDecoration(
+            color: Colors.black,
+            borderRadius: BorderRadius.circular(50),
+            border: Border.all(
+              color:
+                  state is InvalidLoginName ? Colors.red : Colors.greenAccent,
+            )),
         padding: EdgeInsets.only(top: 10),
         child: TxtFieldForScreen(
-            label: "USERNAME_OR_EMAIL",
-            // .localizations(context),
+            label: "Enter your username",
             obscure: false,
             validator: (_) {
               return state is InvalidLoginName
-                  ? "Enter_a_email"
-                  // .localizations(context)
+                  ? "Minimum is 4 characters"
                   : null;
             },
             onChange: (val) {
@@ -105,39 +113,36 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget _renderTxtFieldForScreenPass(LoginState state) {
-    return Padding(
+    return Container(
+        margin: EdgeInsets.only(left: _deviceSizeWidth / 10),
+        width: _deviceSizeWidth * 4 / 5,
+        decoration: BoxDecoration(
+            color: Colors.black,
+            borderRadius: BorderRadius.circular(50),
+            border: Border.all(
+              color: state is InvalidPassword ? Colors.red : Colors.greenAccent,
+            )),
         padding: EdgeInsets.only(top: 10),
         child: TxtFieldForScreen(
-            label: "PASSWORD",
-            // .localizations(context),
+            label: "Enter your password",
             obscure: _isObscure,
             suffixIcon: _renderSeeIcon(),
             validator: (_) {
               return state is InvalidPassword
-                  ? "password_must_be_8+_characters"
-                  // .localizations(context)
+                  ? "Minimum is 8 characters"
                   : null;
             },
             onChange: (val) => _onChange(val, false)));
-  }
-
-  Widget _renderTextForgotPass() {
-    return Padding(
-        padding: EdgeInsets.only(top: 10),
-        child: RichTextWidget(
-          text: "Forgot_your_password?",
-          color: Colors.blue,
-        ));
   }
 
   Widget _renderButtonLogin(LoginState state) {
     return Container(
         alignment: Alignment.bottomCenter,
         padding: EdgeInsetsDirectional.only(bottom: 10),
-        child: ContinueButton(
-          color: state is LoginPasswordValidated ? Colors.blue : Colors.grey,
-          text: "Log_In",
-          // .localizations(context),
+        child: LoginButton(
+          width: _deviceSizeWidth * 4 / 5,
+          color: Colors.greenAccent,
+          text: "Log In",
           onPress: () {
             if (state is LoginPasswordValidated) {
               _loginAction();
@@ -152,9 +157,9 @@ class _LoginScreenState extends State<LoginScreen> {
           .push(MaterialPageRoute(builder: (context) => CardsBoardScreen()));
     }
     if (state is UserFalseState) {
-      // _loginError = state.errorMessage.split(":")[0];
+      _loginError = state.errorMessage;
       showAlertDialog(context,
-          title: "Login Failed ...",
+          title: "Login Failed ",
           content: _loginError,
           onPressButton: onAlertButtonPress);
     }
